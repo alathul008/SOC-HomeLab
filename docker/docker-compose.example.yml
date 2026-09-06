@@ -1,0 +1,39 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer/data:/data
+
+  kali-agent:
+    image: kalilinux/kali-rolling
+    container_name: kali-agent
+    restart: unless-stopped
+    command: tail -f /dev/null
+
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: suricata
+    restart: "no"
+    network_mode: host
+    volumes:
+      - ./suricata/data:/var/log/suricata
+      - ./suricata/rules:/etc/suricata/rules
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    command: sh -c "suricata-update && suricata -i eth0"
+
+  cyberchef:
+    image: mpepping/cyberchef:latest
+    container_name: cyberchef
+    restart: unless-stopped
+    ports:
+      - "8100:8000"
+
+# Real lab values belong in a local .env file and are intentionally omitted.
+# This file is a portfolio example, not a drop-in production deployment.
